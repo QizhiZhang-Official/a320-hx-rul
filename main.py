@@ -1,5 +1,6 @@
 def main():
-    print("Hello from a320-hx-rul!")
+    import torch
+    print(torch.cuda.is_available())
 
 
 if __name__ == "__main__":
