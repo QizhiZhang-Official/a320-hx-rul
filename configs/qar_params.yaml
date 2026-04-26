@@ -1,0 +1,315 @@
+all_parameters:
+  - name: PACK 1 COMPRESSOR OUTLET
+    type: numeric
+    description: 空调组件1压气机出口温度
+
+  - name: PACK 2 COMPRESSOR OUTLET
+    type: numeric
+    description: 空调组件2压气机出口温度
+
+  - name: ENG 1 precool outlet temp
+    type: numeric
+    description: 发动机1预冷器出口温度
+
+  - name: ENG 2 precool outlet temp
+    type: numeric
+    description: 发动机2预冷器出口温度
+
+  - name: PACK 1 DISCHARGE OUTLET
+    type: numeric
+    description: 空调组件1排气口温度
+
+  - name: PACK 2 DISCHARGE OUTLET
+    type: numeric
+    description: 空调组件2排气口温度
+
+  - name: PACK WATER EXTR.TEMPRATURE SYS.1
+    type: numeric
+    description: 空调组件1水分离器温度
+
+  - name: PACK WATER EXTR.TEMPRATURE SYS.2
+    type: numeric
+    description: 空调组件2水分离器温度
+
+  - name: PACK BYPASS VALVE SYS1
+    type: numeric
+    description: 空调组件1旁通活门开度
+
+  - name: PACK BYPASS VALVE SYS2
+    type: numeric
+    description: 空调组件2旁通活门开度
+
+  - name: PACK FLOW SYS.1
+    type: numeric
+    description: 空调组件1流量
+
+  - name: PACK FLOW SYS.2
+    type: numeric
+    description: 空调组件2流量
+
+  - name: PACK 1 RAM AIR INLET POSI
+    type: numeric
+    description: 空调组件1冲压空气进口位置
+
+  - name: PACK 2 RAM AIR INLET POSI
+    type: numeric
+    description: 空调组件2冲压空气进口位置
+
+  - name: PACK1 P/B OFF
+    type: boolean
+    description: 空调组件1按钮关闭状态
+
+  - name: PACK2 P/B OFF
+    type: boolean
+    description: 空调组件2按钮关闭状态
+
+  - name: ENG 1 precool outlet press
+    type: numeric
+    description: 发动机1预冷器出口压力
+
+  - name: ENG 2 precool outlet press
+    type: numeric
+    description: 发动机2预冷器出口压力
+
+  - name: SAT_CA
+    type: numeric
+    description: 静温
+
+  - name: Flight Phase from DMU
+    type: numeric
+    description: 飞行阶段（来自DMU）
+
+  - name: A/C ON GROUND
+    type: boolean
+    description: 飞机是否在地面
+
+  - name: APU BLEED P/B OFF
+    type: boolean
+    description: APU引气按钮关闭状态
+
+  - name: Eng 1 PRV not fully close
+    type: boolean
+    description: 发动机1压力调节活门未完全关闭
+
+  - name: Eng 2 PRV not fully close
+    type: boolean
+    description: 发动机2压力调节活门未完全关闭
+
+  - name: Altitude STANDARD
+    type: numeric
+    description: 标准气压高度
+
+  - name: CITY_PAIR_FR
+    type: string
+    description: 起飞城市代码
+
+  - name: CITY_PAIR_TO
+    type: string
+    description: 目的城市代码
+
+  - name: Ground Speed CAPT
+    type: numeric
+    description: 机长侧地速
+
+  - name: N1 Actual Eng 1
+    type: numeric
+    description: 发动机1实际N1转速
+
+  - name: N1 Actual Eng 2
+    type: numeric
+    description: 发动机2实际N1转速
+
+  - name: Selected Altitude
+    type: numeric
+    description: 选定高度
+
+  - name: TOTAL FUEL QUANTITY
+    type: numeric
+    description: 总燃油量
+
+  - name: FUEL USED ENGINE 1
+    type: numeric
+    description: 发动机1已耗燃油
+
+  - name: FUEL USED ENGINE 2
+    type: numeric
+    description: 发动机2已耗燃油
+
+  - name: Wind direction true
+    type: numeric
+    description: 真风向
+
+  - name: Wind speed
+    type: numeric
+    description: 风速
+
+  - name: TAT_CA
+    type: numeric
+    description: 总温
+
+  - name: Baro Setting Capt
+    type: string
+    description: 机长侧气压设定值
+
+  - name: Baro altitude Select F/O
+    type: string
+    description: 副驾驶侧气压高度选择值
+
+  - name: Baro altitude Selection
+    type: string
+    description: 气压高度选择模式
+
+  - name: STANDARD ALTITUDE SELECTE
+    type: boolean
+    description: 标准高度选择值
+
+  - name: QNH ALTITUDE SELECTED
+    type: boolean
+    description: QNH高度选择值
+
+  - name: Metric altitude
+    type: string
+    description: 公制高度
+
+  - name: Altitude Baro Discrepancy
+    type: string
+    description: 气压高度偏差状态
+
+  - name: Altitude Std Discrepancy
+    type: string
+    description: 标准高度偏差状态
+
+  - name: ALTITUDE BARO CAPT
+    type: numeric
+    description: 机长侧气压高度
+
+  - name: Cabin altitude SYS 2
+    type: numeric
+    description: 客舱高度系统2
+
+
+selected_parameters:
+  - name: PACK 1 COMPRESSOR OUTLET
+    type: numeric
+    description: 空调组件1压气机出口温度
+    map: COT_1
+
+  - name: PACK 2 COMPRESSOR OUTLET
+    type: numeric
+    description: 空调组件2压气机出口温度
+    map: COT_2
+
+  - name: ENG 1 precool outlet temp
+    type: numeric
+    description: 发动机1预冷器出口温度
+    map: TPO_1
+
+  - name: ENG 2 precool outlet temp
+    type: numeric
+    description: 发动机2预冷器出口温度
+    map: TPO_2
+
+  - name: PACK 1 DISCHARGE OUTLET
+    type: numeric
+    description: 空调组件1排气口温度
+    map: TDO_1
+
+  - name: PACK 2 DISCHARGE OUTLET
+    type: numeric
+    description: 空调组件2排气口温度
+    map: TDO_2
+
+  - name: PACK WATER EXTR.TEMPRATURE SYS.1
+    type: numeric
+    description: 空调组件1水分离器温度
+    map: TW_1
+
+  - name: PACK WATER EXTR.TEMPRATURE SYS.2
+    type: numeric
+    description: 空调组件2水分离器温度
+    map: TW_2
+
+  - name: PACK BYPASS VALVE SYS1
+    type: numeric
+    description: 空调组件1旁通活门开度
+    map: PBV_1
+
+  - name: PACK BYPASS VALVE SYS2
+    type: numeric
+    description: 空调组件2旁通活门开度
+    map: PBV_2
+
+  - name: PACK FLOW SYS.1
+    type: numeric
+    description: 空调组件1流量
+    map: PF_1
+
+  - name: PACK FLOW SYS.2
+    type: numeric
+    description: 空调组件2流量
+    map: PF_2
+
+  - name: ENG 1 precool outlet press
+    type: numeric
+    description: 发动机1预冷器出口压力
+    map: PPO_1
+
+  - name: ENG 2 precool outlet press
+    type: numeric
+    description: 发动机2预冷器出口压力
+    map: PPO_2
+
+  - name: PACK 1 RAM AIR INLET POSI
+    type: numeric
+    description: 空调组件1冲压空气入口阀门开度
+    map: RI_1
+
+  - name: PACK 2 RAM AIR INLET POSI
+    type: numeric
+    description: 空调组件2冲压空气入口阀门开度
+    map: RI_2
+
+  - name: SAT_CA
+    type: numeric
+    description: 静温
+    map: SAT
+  
+  - name: Eng 1 PRV not fully close
+    type: boolean
+    description: 发动机1压力调节活门未完全关闭
+    map: PRV_1
+
+  - name: Eng 2 PRV not fully close
+    type: boolean
+    description: 发动机2压力调节活门未完全关闭
+    map: PRV_2
+
+  - name: Altitude STANDARD
+    type: numeric
+    description: 标准气压高度
+    map: ALT
+
+  - name: N1 Actual Eng 1
+    type: numeric
+    description: 发动机1实际N1转速
+    map: N1_1
+
+  - name: N1 Actual Eng 2
+    type: numeric
+    description: 发动机2实际N1转速
+    map: N1_2
+  
+  - name: Wind direction true
+    type: numeric
+    description: 真风向
+    map: WD
+
+  - name: Wind speed
+    type: numeric
+    description: 风速
+    map: WS
+
+  - name: TAT_CA
+    type: numeric
+    description: 总温
+    map: TAT
