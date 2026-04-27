@@ -1,0 +1,15 @@
+only_mean:
+  - 'mean'
+
+fault_dect_method:
+  - 'min'
+  - 'max'
+  - 'mean'
+  - 'std'
+  - 'median'
+  - 'quant_25'
+  - 'quant_75'
+  - 'range'
+  - 'var'
+  - 'skew'
+  - 'kurtosis'
