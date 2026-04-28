@@ -31,8 +31,18 @@ class FeatProcessor:
 
         return data
 
-    def exec(self, data: pd.DataFrame) -> pd.DataFrame:
-        data = self.symbolize_feat(data)
-        data = self.calculate_PrHX_eff(data)
+    def exec(
+        self, craft_data: list[dict[str, str | pd.DataFrame]]
+    ) -> list[dict[str, str | pd.DataFrame]]:
+        processed_craft_data = []
 
-        return data
+        for item in craft_data:
+            file_name = item["file_name"]
+            data = item["data"]
+
+            data = self.symbolize_feat(data)
+            data = self.calculate_PrHX_eff(data)
+
+            processed_craft_data.append({"file_name": file_name, "data": data})
+
+        return processed_craft_data

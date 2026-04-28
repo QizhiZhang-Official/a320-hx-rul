@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def load_an_aircraft(craft_no: str) -> list[dict]:
+def load_an_aircraft(craft_no: str) -> list[dict[str, str | pd.DataFrame]]:
     DIR_2023 = r"D:/2022年  国航CBM关键技术研究项目/20220616 甘工提供的数据和资料/第6批  202405 A320 2023年数据/320CFM/"
     DIR_2024 = r"D:/2022年  国航CBM关键技术研究项目/20220616 甘工提供的数据和资料/第8批数据  A320 2024年总表/2024-320/A320/"
     

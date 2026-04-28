@@ -55,26 +55,29 @@ class PreProcessor:
 
         return data
 
-    def exec(self, data: pd.DataFrame) -> pd.DataFrame:
-        msg = {"check_phase": None, "check_datetime": None, "data": None}
+    def exec(
+        self, craft_data: list[dict[str, str | pd.DataFrame]]
+    ) -> list[dict[str, str | pd.DataFrame]]:
+        processed_craft_data = []
 
-        if not self.check_phase(data):
-            msg["check_phase"] = False
-        else:
-            msg["check_phase"] = True
+        for item in craft_data:
+            file_name = item["file_name"]
+            data = item["data"]
 
-        is_datetime_full, data = self.check_datetime(data)
-        if not is_datetime_full:
-            msg["check_datetime"] = False
-        else:
-            msg["check_datetime"] = True
+            if self.check_phase(data) == False:
+                print(f"{file_name}8个阶段不完整")
+                continue
 
-        data = self.filtering(data)
+            is_datetime_full, data = self.check_datetime(data)
+            if is_datetime_full == False:
+                raise Exception(f"{file_name}日期有缺失")
 
-        data = self.standardize(data)
+            data = self.filtering(data)
 
-        data = self.sync_sample_rate(data)
+            data = self.standardize(data)
 
-        msg["data"] = data
+            data = self.sync_sample_rate(data)
 
-        return msg
+            processed_craft_data.append({"file_name": file_name, "data": data})
+
+        return processed_craft_data
