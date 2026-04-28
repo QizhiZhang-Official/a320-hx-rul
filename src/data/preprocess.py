@@ -1,6 +1,7 @@
 import pandas as pd
 import yaml
 import numpy as np
+from tqdm import tqdm
 
 
 class PreProcessor:
@@ -8,27 +9,37 @@ class PreProcessor:
         self.selected_qar = self._get_selected_qar()
 
     def _get_selected_qar(self) -> list:
-        with open("configs/qar_params.yaml", "r") as f:
+        with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
         selected_qar = [item["name"] for item in config["selected_parameters"]]
 
         return selected_qar
 
-    def check_phase(self, data: pd.DataFrame) -> bool:
+    def check_phase(self, data: pd.DataFrame):
         existing_phases = set(data["Flight Phase from DMU"].dropna().unique())
         required_phases = set(range(2, 10))
 
-        return required_phases.issubset(existing_phases)
+        if not required_phases.issubset(existing_phases):
+            return False, data
+        else:
+            data = data[data["Flight Phase from DMU"] == 6].copy()
+            return True, data
 
-    def check_datetime(self, data: pd.DataFrame) -> pd.DataFrame:
+    def check_datetime(self, data: pd.DataFrame):
         if data["time"].isna().any():
             return False, data
         else:
             data["time"] = pd.to_datetime(data["time"], errors="coerce")
             return True, data
+    
+    def indexing(self, data: pd.DataFrame) -> pd.DataFrame:
+        data['time'] = pd.to_datetime(data['time'])
+        data.set_index('time', inplace=True)
+        
+        return data
 
     def filtering(self, data: pd.DataFrame) -> pd.DataFrame:
-        data = data[data["Flight Phase from DMU"] == 6].copy()
+
         data = data[self.selected_qar].copy()
 
         return data
@@ -48,8 +59,10 @@ class PreProcessor:
             {"FULLY CLOSED": 0, "NOT FULLY CLOSED": 1}
         )
 
+        return data
+
     def sync_sample_rate(self, data: pd.DataFrame) -> pd.DataFrame:
-        data = pd.to_numeric(data, errors="coerce")
+        data = data.apply(pd.to_numeric, errors="coerce")
         data = data.interpolate(method="linear", limit=5)
         data = data.ffill().bfill()
 
@@ -60,12 +73,13 @@ class PreProcessor:
     ) -> list[dict[str, str | pd.DataFrame]]:
         processed_craft_data = []
 
-        for item in craft_data:
+        for item in tqdm(craft_data, desc='--'):
             file_name = item["file_name"]
             data = item["data"]
 
-            if self.check_phase(data) == False:
-                print(f"{file_name}8个阶段不完整")
+            is_phase_full, data = self.check_phase(data)
+            if is_phase_full == False:
+                # print(f"{file_name} 8个阶段不完整")
                 continue
 
             is_datetime_full, data = self.check_datetime(data)

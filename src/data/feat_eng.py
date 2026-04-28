@@ -1,5 +1,6 @@
 import yaml
 import pandas as pd
+from tqdm import tqdm
 
 
 class FeatProcessor:
@@ -7,17 +8,17 @@ class FeatProcessor:
         self.feat_map = self._load_feat_map()
 
     def _load_feat_map(self) -> dict:
-        with open("configs/qar_params.yaml", "r") as f:
+        with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
         feat_map = {}
         selected_qar = config["selected_parameters"]
         for item in selected_qar:
-            feat_map = {item["name"]: item["map"]}
+            feat_map[item["name"]] = item["map"]
 
         return feat_map
 
     def symbolize_feat(self, data: pd.DataFrame) -> pd.DataFrame:
-        data.rename(columns=self.feat_map)
+        data = data.rename(columns=self.feat_map)
 
         return data
 
@@ -36,7 +37,7 @@ class FeatProcessor:
     ) -> list[dict[str, str | pd.DataFrame]]:
         processed_craft_data = []
 
-        for item in craft_data:
+        for item in tqdm(craft_data, desc='--'):
             file_name = item["file_name"]
             data = item["data"]
 

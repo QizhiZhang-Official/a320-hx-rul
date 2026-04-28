@@ -1,5 +1,6 @@
 import yaml
 import pandas as pd
+from tqdm import tqdm
 
 
 class FeatZipper:
@@ -18,9 +19,9 @@ class FeatZipper:
         for feat in data.columns.to_list():
             for method in self.zip_method:
                 if method == "mean":
-                    flight_dict = {feat + "_mean": data[feat].mean()}
+                    flight_dict[feat + "_mean"] = data[feat].mean()
                 elif method == "std":
-                    flight_dict = {feat + "_std": data[feat].std()}
+                    flight_dict[feat + "_std"] = data[feat].std()
                 else:
                     raise Exception("未知的zip方法")
 
@@ -29,7 +30,7 @@ class FeatZipper:
     def exec(self, craft_data: list[dict[str, str | pd.DataFrame]]) -> pd.DataFrame:
         processed_craft_data = []
 
-        for item in craft_data:
+        for item in tqdm(craft_data, desc='--'):
             file_name = item["file_name"]
             data = item["data"]
 
