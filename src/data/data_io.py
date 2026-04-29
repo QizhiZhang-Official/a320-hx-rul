@@ -11,24 +11,28 @@ def load_an_aircraft(craft_no: str) -> list[dict[str, str | pd.DataFrame]]:
 
     if craft_no in os.listdir(DIR_2023):
         for file_name in tqdm(os.listdir(os.path.join(DIR_2023, craft_no)), desc="--2023"):
-            flight_data = {
-                "file_name": file_name,
-                "data": pd.read_csv(
-                    os.path.join(DIR_2023, craft_no, file_name),
-                    dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str},
-                ),
-            }
-            craft_data.append(flight_data)
+            file_path = os.path.join(DIR_2023, craft_no, file_name)
+            if os.path.getsize(file_path) > 0:
+                flight_data = {
+                    "file_name": file_name,
+                    "data": pd.read_csv(
+                        file_path,
+                        dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str},
+                    ),
+                }
+                craft_data.append(flight_data)
 
     if craft_no in os.listdir(DIR_2024):
         for file_name in tqdm(os.listdir(os.path.join(DIR_2024, craft_no)), desc="--2024"):
-            flight_data = {
-                "file_name": file_name,
-                "data": pd.read_csv(
-                    os.path.join(DIR_2024, craft_no, file_name),
-                    dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str},
-                ),
-            }
-            craft_data.append(flight_data)
+            file_path = os.path.join(DIR_2024, craft_no, file_name)
+            if os.path.getsize(file_path) > 0:
+                flight_data = {
+                    "file_name": file_name,
+                    "data": pd.read_csv(
+                        file_path,
+                        dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str},
+                    ),
+                }
+                craft_data.append(flight_data)
 
     return craft_data
