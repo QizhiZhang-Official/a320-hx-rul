@@ -24,16 +24,10 @@ class PreProcessor:
         else:
             data = data[data["Flight Phase from DMU"] == 6].copy()
             return True, data
-
-    def check_datetime(self, data: pd.DataFrame):
-        if data["time"].isna().any():
-            return False, data
-        else:
-            data["time"] = pd.to_datetime(data["time"], errors="coerce")
-            return True, data
     
     def indexing(self, data: pd.DataFrame) -> pd.DataFrame:
         data['time'] = pd.to_datetime(data['time'])
+        data['time'] = data['time'].interpolate(method='linear')
         data.set_index('time', inplace=True)
         
         return data
@@ -81,10 +75,8 @@ class PreProcessor:
             if is_phase_full == False:
                 # print(f"{file_name} 8个阶段不完整")
                 continue
-
-            is_datetime_full, data = self.check_datetime(data)
-            if is_datetime_full == False:
-                raise Exception(f"{file_name}日期有缺失")
+            
+            data = self.indexing(data)
 
             data = self.filtering(data)
 

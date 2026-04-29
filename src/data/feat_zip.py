@@ -15,7 +15,7 @@ class FeatZipper:
         return zip_method
 
     def zip_feat_to_dict(self, data: pd.DataFrame) -> dict:
-        flight_dict = {"time": data["time"][0]}
+        flight_dict = {"time": str(data.index[0])}
         for feat in data.columns.to_list():
             for method in self.zip_method:
                 if method == "mean":
