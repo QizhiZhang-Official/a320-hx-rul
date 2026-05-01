@@ -8,5 +8,9 @@ dependencies = [
     "numpy>=2.4.4",
     "pandas>=3.0.2",
     "pyyaml>=6.0.3",
+    "torch",
     "tqdm>=4.67.3",
 ]
+
+[tool.uv.sources]
+torch = { path = "wheels/torch-2.11.0+cu130-cp314-cp314-win_amd64.whl" }
