@@ -24,7 +24,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.4.4" },
     { name = "pandas", specifier = ">=3.0.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "torch", path = "torch-2.11.0+cu130-cp314-cp314-win_amd64.whl" },
+    { name = "torch", path = "wheels/torch-2.11.0+cu130-cp314-cp314-win_amd64.whl" },
     { name = "tqdm", specifier = ">=4.67.3" },
 ]
 
@@ -244,7 +244,7 @@ wheels = [
 [[package]]
 name = "torch"
 version = "2.11.0+cu130"
-source = { path = "torch-2.11.0+cu130-cp314-cp314-win_amd64.whl" }
+source = { path = "wheels/torch-2.11.0+cu130-cp314-cp314-win_amd64.whl" }
 dependencies = [
     { name = "filelock" },
     { name = "fsspec" },
