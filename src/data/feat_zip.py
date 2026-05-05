@@ -14,8 +14,8 @@ class FeatZipper:
 
         return zip_method
 
-    def zip_feat_to_dict(self, data: pd.DataFrame) -> dict:
-        flight_dict = {"time": str(data.index[0])}
+    def zip_feat_to_dict(self, data: pd.DataFrame, file_name: str) -> dict:
+        flight_dict = {"time": str(data.index[0]), "file_name": file_name}
         for feat in data.columns.to_list():
             for method in self.zip_method:
                 if method == "mean":
@@ -30,11 +30,11 @@ class FeatZipper:
     def exec(self, craft_data: list[dict[str, str | pd.DataFrame]]) -> pd.DataFrame:
         processed_craft_data = []
 
-        for item in tqdm(craft_data, desc='--'):
+        for item in tqdm(craft_data, desc="--"):
             file_name = item["file_name"]
             data = item["data"]
 
-            zipped_data = self.zip_feat_to_dict(data)
+            zipped_data = self.zip_feat_to_dict(data, file_name)
 
             processed_craft_data.append(zipped_data)
 
