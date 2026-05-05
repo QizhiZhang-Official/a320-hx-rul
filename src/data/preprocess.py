@@ -15,21 +15,21 @@ class PreProcessor:
 
         return selected_qar
 
-    def check_phase(self, data: pd.DataFrame):
+    def check_phase(self, data: pd.DataFrame, phase: int):
         existing_phases = set(data["Flight Phase from DMU"].dropna().unique())
         required_phases = set(range(2, 10))
 
         if not required_phases.issubset(existing_phases):
             return False, data
         else:
-            data = data[data["Flight Phase from DMU"] == 6].copy()
+            data = data[data["Flight Phase from DMU"] == phase].copy()
             return True, data
-    
+
     def indexing(self, data: pd.DataFrame) -> pd.DataFrame:
-        data['time'] = pd.to_datetime(data['time'])
-        data['time'] = data['time'].interpolate(method='linear')
-        data.set_index('time', inplace=True)
-        
+        data["time"] = pd.to_datetime(data["time"])
+        data["time"] = data["time"].interpolate(method="linear")
+        data.set_index("time", inplace=True)
+
         return data
 
     def filtering(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -63,19 +63,19 @@ class PreProcessor:
         return data
 
     def exec(
-        self, craft_data: list[dict[str, str | pd.DataFrame]]
+        self, craft_data: list[dict[str, str | pd.DataFrame]], phase: int
     ) -> list[dict[str, str | pd.DataFrame]]:
         processed_craft_data = []
 
-        for item in tqdm(craft_data, desc='--'):
+        for item in tqdm(craft_data, desc="--"):
             file_name = item["file_name"]
             data = item["data"]
 
-            is_phase_full, data = self.check_phase(data)
+            is_phase_full, data = self.check_phase(data, phase)
             if is_phase_full == False:
                 # print(f"{file_name} 8个阶段不完整")
                 continue
-            
+
             data = self.indexing(data)
 
             data = self.filtering(data)

@@ -6,7 +6,7 @@ from src.data.preprocess import PreProcessor
 from src.data.feat_eng import FeatProcessor
 from src.data.feat_zip import FeatZipper
 
-def process_one_craft(craft_no: str, save_dir: str):
+def process_one_craft(craft_no: str, phase: int, save_dir: str):
     with open("configs/all_craft_no.yaml", "r") as f:
         all_craft_no = yaml.safe_load(f)
 
@@ -18,7 +18,7 @@ def process_one_craft(craft_no: str, save_dir: str):
     print("-载入数据...")
     craft_data = load_an_aircraft(craft_no)
     print("-预处理...")
-    craft_data = preprocessor.exec(craft_data)
+    craft_data = preprocessor.exec(craft_data, phase)
     print("-特征工程...")
     craft_data = feat_processor.exec(craft_data)
     print("-统计...")
@@ -32,7 +32,7 @@ def process_one_craft(craft_no: str, save_dir: str):
     craft_data_df.to_csv(os.path.join(save_dir, craft_no + ".csv"), index=False)
 
 
-def step_1(save_dir: str):
+def step_1(phase: int, save_dir: str):
     with open("configs/all_craft_no.yaml", "r") as f:
         all_craft_no = yaml.safe_load(f)
 
@@ -45,7 +45,7 @@ def step_1(save_dir: str):
         print("-载入数据...")
         craft_data = load_an_aircraft(craft_no)
         print("-预处理...")
-        craft_data = preprocessor.exec(craft_data)
+        craft_data = preprocessor.exec(craft_data, phase)
         print("-特征工程...")
         craft_data = feat_processor.exec(craft_data)
         print("-统计...")
