@@ -15,9 +15,9 @@ from src.data.plot import plot_PrHX_eff, plot_COT_all, plot_COT_adv
 # 画COT的片段 用于提取衰退曲线做分析
 plot_COT_adv(
     zipped_data_dir="D:/zipped_data/phase_2/",
-    craft_no="B-6595",
-    start_date="2023-04-01",
-    end_date="2023-05-29",
+    craft_no="B-6326",
+    start_date="2024-05-05",
+    end_date="2024-06-13",
     pack=2,
-    modify=1,
+    modify=3,
 )
