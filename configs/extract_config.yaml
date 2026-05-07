@@ -1,0 +1,96 @@
+- craft_no: B-1816
+  start_date: 2023-04-01
+  end_date: 2023-05-18
+  pack: 1
+  modify: 1
+
+- craft_no: B-1816
+  start_date: 2023-04-01
+  end_date: 2023-05-18
+  pack: 2
+  modify: 1
+
+- craft_no: B-1855
+  start_date: 2023-04-15
+  end_date: 2023-06-09
+  pack: 1
+  modify: 0
+
+- craft_no: B-1855
+  start_date: 2023-04-15
+  end_date: 2023-06-10
+  pack: 2
+  modify: 0
+
+- craft_no: B-6326
+  start_date: 2023-04-01
+  end_date: 2023-05-04
+  pack: 1
+  modify: 3
+
+- craft_no: B-6327
+  start_date: 2023-03-15
+  end_date: 2023-05-17
+  pack: 1
+  modify: 1
+
+- craft_no: B-6327
+  start_date: 2023-03-10
+  end_date: 2023-06-14
+  pack: 2
+  modify: 0
+
+- craft_no: B-6363
+  start_date: 2023-03-15
+  end_date: 2023-05-06
+  pack: 1
+  modify: 0
+
+- craft_no: B-6363
+  start_date: 2023-05-07
+  end_date: 2023-05-25
+  pack: 1
+  modify: 0
+
+- craft_no: B-6363
+  start_date: 2023-04-01
+  end_date: 2023-05-25
+  pack: 2
+  modify: 0
+
+- craft_no: B-6385
+  start_date: 2023-04-15
+  end_date: 2023-05-20
+  pack: 1
+  modify: 4
+
+- craft_no: B-6385
+  start_date: 2023-04-20
+  end_date: 2023-06-07
+  pack: 1
+  modify: 4
+
+- craft_no: B-6555
+  start_date: 2023-04-20
+  end_date: 2023-05-13
+  pack: 1
+  modify: 0
+
+- craft_no: B-6555
+  start_date: 2023-04-20
+  end_date: 2023-05-21
+  pack: 2
+  modify: 0
+
+- craft_no: B-6595
+  start_date: 2023-04-01
+  end_date: 2023-05-08
+  pack: 1
+  modify: 0
+
+- craft_no: B-6595
+  start_date: 2023-04-01
+  end_date: 2023-05-29
+  pack: 2
+  modify: 0
+

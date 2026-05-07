@@ -9,7 +9,7 @@ class Sampler():
         self.extracted_data = None
         self.extracted_pack = None
     
-    def extract_from_zipped(self, craft_no: str, start_time: str, end_time: str, pack: int, modify: int):
+    def extract_from_zipped(self, craft_no: str, start_date: str, end_date: str, pack: int, modify: int):
         zipped_data = load_zipped_data(self.zipped_data_dir)
         for item in zipped_data:
             if craft_no != item["craft_no"]:
@@ -18,7 +18,7 @@ class Sampler():
             
             if not isinstance(data.index, pd.DatetimeIndex):
                 data.index = pd.to_datetime(data.index)
-            period_data = data.loc[start_time:end_time]
+            period_data = data.loc[start_date:end_date]
             if modify > 0:
                 modified_data = period_data.iloc[:-modify]
             else:

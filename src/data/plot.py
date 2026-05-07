@@ -95,8 +95,8 @@ def plot_COT_all(zipped_data_dir: str, save_dir: str):
 def plot_COT_adv(
     zipped_data_dir: str,
     craft_no: str,
-    start_time: str,
-    end_time: str,
+    start_date: str,
+    end_date: str,
     pack: int,
     modify: int,
 ):
@@ -109,7 +109,7 @@ def plot_COT_adv(
         
         if not isinstance(data.index, pd.DatetimeIndex):
             data.index = pd.to_datetime(data.index)
-        period_data = data.loc[start_time:end_time]
+        period_data = data.loc[start_date:end_date]
         if modify > 0:
             modified_data = period_data.iloc[:-modify]
         else:
