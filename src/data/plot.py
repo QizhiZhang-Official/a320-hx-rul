@@ -99,14 +99,17 @@ def plot_COT_adv(
     end_date: str,
     pack: int,
     modify: int,
+    is_show: bool,
+    save_dir: str,
 ):
     from src.data.data_io import load_zipped_data
+
     zipped_data = load_zipped_data(zipped_data_dir)
     for item in zipped_data:
         if craft_no != item["craft_no"]:
             continue
         data = item["data"]
-        
+
         if not isinstance(data.index, pd.DatetimeIndex):
             data.index = pd.to_datetime(data.index)
         period_data = data.loc[start_date:end_date]
@@ -114,12 +117,43 @@ def plot_COT_adv(
             modified_data = period_data.iloc[:-modify]
         else:
             modified_data = period_data
-        
+
         plt.figure()
         plt.plot(modified_data.index, modified_data[f"COT_{str(pack)}_mean"])
         plt.xlabel("Time")
         plt.ylabel(f"COT_{str(pack)}_mean")
         plt.grid(True)
         plt.tight_layout()
-        plt.show()
+        if save_dir != "":
+            os.makedirs(save_dir, exist_ok=True)
+            plt.savefig(
+                os.path.join(save_dir, f"{craft_no}_{start_date}_PACK_{pack}.png")
+            )
+        if is_show:
+            plt.show()
         plt.close()
+
+
+def plot_all_extracted_COT(zipped_data_dir: str, save_dir: str) -> None:
+    import yaml
+
+    with open("configs/extract_config.yaml", "r") as f:
+        extract_config = yaml.safe_load(f)
+
+    for item in tqdm(extract_config):
+        craft_no = item["craft_no"]
+        start_date = item["start_date"]
+        end_date = item["end_date"]
+        pack = item["pack"]
+        modify = item["modify"]
+
+        plot_COT_adv(
+            zipped_data_dir,
+            craft_no,
+            start_date,
+            end_date,
+            pack,
+            modify,
+            False,
+            save_dir,
+        )

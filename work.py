@@ -1,5 +1,5 @@
 from src.data.pipeline import step_1, process_one_craft
-from src.data.plot import plot_PrHX_eff, plot_COT_all, plot_COT_adv
+from src.data.plot import *
 
 # process_one_craft(craft_no='B-1855', phase=2, save_dir=r'D:/zipped_data/phase_2/')
 
@@ -13,11 +13,20 @@ from src.data.plot import plot_PrHX_eff, plot_COT_all, plot_COT_adv
 # plot_COT(zipped_data_dir="D:/zipped_data/phase_6/", save_dir="figures/COT_analysis/phase_6/")
 
 # 画COT的片段 用于提取衰退曲线做分析
-plot_COT_adv(
-    zipped_data_dir="D:/zipped_data/phase_2/",
-    craft_no="B-6326",
-    start_date="2024-05-05",
-    end_date="2024-06-13",
-    pack=2,
-    modify=3,
-)
+# plot_COT_adv(
+#     zipped_data_dir="D:/zipped_data/phase_2/",
+#     craft_no="B-6326",
+#     start_date="2024-05-05",
+#     end_date="2024-06-13",
+#     pack=2,
+#     modify=3,
+#     is_show=True,
+#     save_dir="",
+# )
+
+# 画所有提取的COT衰退曲线并保存
+# plot_all_extracted_COT(
+#     zipped_data_dir="D:/zipped_data/phase_2/", save_dir="figures/all_extracted_COT/"
+# )
+
+# 生成 annotations.yaml

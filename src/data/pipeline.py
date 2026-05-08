@@ -1,7 +1,7 @@
 import yaml
 import pandas as pd
 import os
-from src.data.data_io import load_an_aircraft
+from src.data.data_io import *
 from src.data.preprocess import PreProcessor
 from src.data.feat_eng import FeatProcessor
 from src.data.feat_zip import FeatZipper
@@ -57,3 +57,30 @@ def step_1(phase: int, save_dir: str):
         craft_data_df.reset_index(inplace=True)
         os.makedirs(save_dir, exist_ok=True)
         craft_data_df.to_csv(os.path.join(save_dir, craft_no + ".csv"), index=False)
+
+
+def generate_annotations(zipped_data_dir: str):
+    with open("configs/extract_config.yaml", "r") as f:
+        extract_config = yaml.safe_load(f)
+    
+    zipped_data = load_zipped_data(zipped_data_dir)
+    for item in tqdm(extract_config):
+        craft_no = item["craft_no"]
+        start_date = item["start_date"]
+        end_date = item["end_date"]
+        pack = item["pack"]
+        modify = item["modify"]
+
+        for craft_data in zipped_data:
+            if craft_data['craft_no'] != craft_no:
+                continue
+            data = craft_data["data"]
+            if not isinstance(data.index, pd.DatetimeIndex):
+                data.index = pd.to_datetime(data.index)
+            period_data = data.loc[start_date:end_date]
+            if modify > 0:
+                modified_data = period_data.iloc[:-modify]
+            else:
+                modified_data = period_data
+            modified_data = modified_data.sort_index()
+        
