@@ -34,4 +34,5 @@ generate_annotations(
     raw_data_dir="D:/raw_data/",
     zipped_data_dir="D:/zipped_data/phase_2/",
     PF_threshold=0.4,
+    max_rul_s=360000,
 )

@@ -61,7 +61,7 @@ def step_1(phase: int, save_dir: str):
         craft_data_df.to_csv(os.path.join(save_dir, craft_no + ".csv"), index=False)
 
 
-def generate_annotations(raw_data_dir: str, zipped_data_dir: str, PF_threshold: float) -> None:
+def generate_annotations(raw_data_dir: str, zipped_data_dir: str, PF_threshold: float, max_rul_s: int) -> None:
     print('\n生成 annotations.yaml')
-    anno_generator = AnnoGenerator(raw_data_dir, zipped_data_dir, PF_threshold)
+    anno_generator = AnnoGenerator(raw_data_dir, zipped_data_dir, PF_threshold, max_rul_s)
     anno_generator.exec()
