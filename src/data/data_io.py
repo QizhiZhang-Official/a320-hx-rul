@@ -42,9 +42,11 @@ def load_an_aircraft(craft_no: str) -> list[dict[str, str | pd.DataFrame]]:
     return craft_data
 
 
-def load_zipped_data(load_dir: str) -> list[dict[str, str | pd.DataFrame]]:
+def load_zipped_data(
+    load_dir: str, verbose: bool = True
+) -> list[dict[str, str | pd.DataFrame]]:
     zipped_data = []
-    for craft_no in tqdm(os.listdir(load_dir), desc="载入数据"):
+    for craft_no in tqdm(os.listdir(load_dir), desc="载入数据", disable=not verbose):
         data = pd.read_csv(os.path.join(load_dir, craft_no))
         data.set_index("time", inplace=True)
         flight_data = {"craft_no": craft_no.replace(".csv", ""), "data": data}

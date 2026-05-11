@@ -1,4 +1,4 @@
-from src.data.pipeline import step_1, process_one_craft
+from src.data.pipeline import *
 from src.data.plot import *
 
 # process_one_craft(craft_no='B-1855', phase=2, save_dir=r'D:/zipped_data/phase_2/')
@@ -30,3 +30,8 @@ from src.data.plot import *
 # )
 
 # 生成 annotations.yaml
+generate_annotations(
+    raw_data_dir="D:/raw_data/",
+    zipped_data_dir="D:/zipped_data/phase_2/",
+    PF_threshold=0.4,
+)
