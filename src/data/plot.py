@@ -157,3 +157,29 @@ def plot_all_extracted_COT(zipped_data_dir: str, save_dir: str) -> None:
             False,
             save_dir,
         )
+
+
+def plot_rul_vs_FC(save_dir: str) -> None:
+    import yaml
+
+    os.makedirs(save_dir, exist_ok=True)
+    with open("configs/annotations.yaml", "r") as f:
+        annotations = yaml.safe_load(f)
+    for item in tqdm(annotations):
+        save_name = (
+            item["craft_no"]
+            + "_"
+            + str(item["start_date"])
+            + "_PACK_"
+            + str(item["pack"])
+            + ".png"
+        )
+        curve = pd.DataFrame(item["annotation"])
+        plt.figure()
+        plt.plot(range(1, len(curve) + 1), curve["rul_h"])
+        plt.xlabel("Flight Cycle")
+        plt.ylabel("rul_h")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_dir, save_name), dpi=300)
+        plt.close()

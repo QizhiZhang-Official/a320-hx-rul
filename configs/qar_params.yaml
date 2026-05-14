@@ -313,3 +313,39 @@ selected_parameters:
     type: numeric
     description: 总温
     map: TAT
+
+
+pcck_1_parameters:
+  - PACK 1 COMPRESSOR OUTLET
+  - ENG 1 precool outlet temp
+  - PACK 1 DISCHARGE OUTLET
+  - PACK WATER EXTR.TEMPRATURE SYS.1
+  - PACK BYPASS VALVE SYS1
+  - PACK FLOW SYS.1
+  - ENG 1 precool outlet press
+  - PACK 1 RAM AIR INLET POSI
+  - SAT_CA
+  - Eng 1 PRV not fully close
+  - Altitude STANDARD
+  - N1 Actual Eng 1
+  - Wind direction true
+  - Wind speed
+  - TAT_CA
+
+
+pcck_2_parameters:
+  - PACK 2 COMPRESSOR OUTLET
+  - ENG 2 precool outlet temp
+  - PACK 2 DISCHARGE OUTLET
+  - PACK WATER EXTR.TEMPRATURE SYS.2
+  - PACK BYPASS VALVE SYS2
+  - PACK FLOW SYS.2
+  - ENG 2 precool outlet press
+  - PACK 2 RAM AIR INLET POSI
+  - SAT_CA
+  - Eng 2 PRV not fully close
+  - Altitude STANDARD
+  - N1 Actual Eng 2
+  - Wind direction true
+  - Wind speed
+  - TAT_CA
