@@ -74,25 +74,34 @@ class AnnoGenerator:
 
     def _get_annotation(self, extr_conf_dic: dict) -> list[dict]:
         annotation = []
+        craft_no = extr_conf_dic["craft_no"]
+        start_date = extr_conf_dic["start_date"]
+        pack = extr_conf_dic["pack"]
+        year = start_date.year
         file_name_list = self._get_file_name_list(extr_conf_dic)
+        lifecycle_id = craft_no + "_" + str(start_date) + "_" + "pack" + str(pack)
+        sub_id = 1
         for file_name in file_name_list:
-            craft_no = extr_conf_dic["craft_no"]
-            start_date = extr_conf_dic["start_date"]
-            pack = extr_conf_dic["pack"]
-            year = start_date.year
             data_path = os.path.join(self.raw_data_dir, str(year), craft_no, file_name)
             data = pd.read_csv(
                 data_path, dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str}
             )
 
             flight_anno = {}
+            flight_anno["craft_no"] = craft_no
+            flight_anno["lifecycle_id"] = lifecycle_id
+            flight_anno["lifecycle_start_date"] = start_date
+            flight_anno["sub_id"] = sub_id
             flight_anno["file_name"] = file_name
+            flight_anno["pack"] = pack
             flight_anno["flight_no"] = self._get_flight_no_from_file_name(file_name)
             flight_anno["duration_s"] = self._get_duration(
                 data, pack, self.PF_threshold
             )
 
             annotation.append(flight_anno)
+
+            sub_id += 1
 
         return annotation
 
