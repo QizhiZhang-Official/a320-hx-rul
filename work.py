@@ -30,12 +30,12 @@ from src.data.plot import *
 # )
 
 # 生成 annotations.yaml
-generate_annotations(
-    raw_data_dir="D:/raw_data/",
-    zipped_data_dir="D:/zipped_data/phase_2/",
-    PF_threshold=0.4,
-    max_rul_s=150 * 3600,
-)
+# generate_annotations(
+#     raw_data_dir="D:/raw_data/",
+#     zipped_data_dir="D:/zipped_data/phase_2/",
+#     PF_threshold=0.4,
+#     max_rul_s=150 * 3600,
+# )
 
 # 依据提取的 annotations.yaml 画 RUL vs Flight Cycle 的曲线
-# plot_rul_vs_FC(save_dir="figures/rul_vs_flight_cycle/")
+plot_rul_vs_FC(save_dir="figures/rul_vs_flight_cycle/")
