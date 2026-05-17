@@ -315,7 +315,7 @@ selected_parameters:
     map: TAT
 
 
-pcck_1_parameters:
+pack_1_parameters:
   - PACK 1 COMPRESSOR OUTLET
   - ENG 1 precool outlet temp
   - PACK 1 DISCHARGE OUTLET
@@ -333,7 +333,7 @@ pcck_1_parameters:
   - TAT_CA
 
 
-pcck_2_parameters:
+pack_2_parameters:
   - PACK 2 COMPRESSOR OUTLET
   - ENG 2 precool outlet temp
   - PACK 2 DISCHARGE OUTLET

@@ -1,3 +1,5 @@
+# src/data/dataloader.py
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -13,12 +15,16 @@ def collate_fn(batch) -> dict:
     num_batch = len(features)
 
     padded_features = torch.zeros(num_batch, max_len, num_feat)
-    mask = torch.zeros(num_batch, max_len)
+    padding_mask = torch.zeros(num_batch, max_len, dtype=torch.bool)
 
     for index, feature in enumerate(features):
-        len = feature.size(0)
-        padded_features[index, :len, :] = feature
-        mask[index, :len] = 1.0
+        seq_len = feature.size(0)
+        padded_features[index, :seq_len, :] = feature
+        padding_mask[index, seq_len:] = True
 
-    return {"feature": padded_features, "mask": mask, "rul": rul, "meta": meta}
-
+    return {
+        "padded_features": padded_features,
+        "padding_mask": padding_mask,
+        "rul": torch.stack(rul),
+        "meta": meta,
+    }

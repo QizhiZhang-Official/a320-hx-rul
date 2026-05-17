@@ -1,3 +1,5 @@
+# src/data/dataset.py
+
 import os
 import yaml
 import torch
@@ -24,6 +26,7 @@ class HXRULDataset(Dataset):
         file_path = os.path.join(
             self.raw_data_dir,
             str(flight["lifecycle_start_date"].year),
+            flight["craft_no"],
             flight["file_name"],
         )
         data = pd.read_csv(file_path, dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str})
@@ -60,10 +63,10 @@ class HXRULDataset(Dataset):
         return flattened_annotations
 
     def _load_feature_params(self) -> dict:
-        with open("configs/qar_params.yaml", "r") as f:
+        with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
             qar_params = yaml.safe_load(f)
-        features_pack_1 = qar_params["pcck_1_parameters"]
-        features_pack_2 = qar_params["pacl_2_parameters"]
+        features_pack_1 = qar_params["pack_1_parameters"]
+        features_pack_2 = qar_params["pack_2_parameters"]
         features = {
             1: features_pack_1,
             2: features_pack_2,
