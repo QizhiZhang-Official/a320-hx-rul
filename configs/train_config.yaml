@@ -1,0 +1,27 @@
+encoder_training_config:
+  device: cuda
+  
+  # 数据集
+  raw_data_dir: D:/raw_data/
+  use_sample_for_scaler_fitting: 10
+  val_set_ratio: 0.2
+  
+  # 自训练掩码
+  total_mask_ratio: 0.35
+  block_len: 40
+  channel_mask_ratio: 0.2
+
+  # Encoder 参数
+  batch_size: 32
+  num_workers: 4
+  feat_dim: 15
+  embed_dim: 128
+  n_head: 4
+  n_layers: 2
+  dropout: 0.05
+
+  # 优化器参数
+  lr: 1e-4
+  weight_decay: 1e-4
+
+  epochs: 30

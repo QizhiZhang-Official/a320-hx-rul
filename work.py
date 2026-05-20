@@ -13,16 +13,16 @@ from src.data.plot import *
 # plot_COT(zipped_data_dir="D:/zipped_data/phase_6/", save_dir="figures/COT_analysis/phase_6/")
 
 # 画COT的片段 用于提取衰退曲线做分析
-# plot_COT_adv(
-#     zipped_data_dir="D:/zipped_data/phase_2/",
-#     craft_no="B-6326",
-#     start_date="2024-05-05",
-#     end_date="2024-06-13",
-#     pack=2,
-#     modify=3,
-#     is_show=True,
-#     save_dir="",
-# )
+plot_COT_adv(
+    zipped_data_dir="D:/zipped_data/phase_2/",
+    craft_no="B-1816",
+    start_date="2023-04-22",
+    end_date="2023-05-18",
+    pack=1,
+    modify=1,
+    is_show=True,
+    save_dir="",
+)
 
 # 画所有提取的COT衰退曲线并保存
 # plot_all_extracted_COT(
@@ -38,4 +38,4 @@ from src.data.plot import *
 # )
 
 # 依据提取的 annotations.yaml 画 RUL vs Flight Cycle 的曲线
-plot_rul_vs_FC(save_dir="figures/rul_vs_flight_cycle/")
+# plot_rul_vs_FC(save_dir="figures/rul_vs_flight_cycle/")

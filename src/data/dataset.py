@@ -1,5 +1,4 @@
 # src/data/dataset.py
-
 import os
 import yaml
 import torch
@@ -7,15 +6,17 @@ import numpy as np
 import pandas as pd
 from src.data.preprocess import PreProcessor
 from torch.utils.data import Dataset
+from src.utils.scaler import DataScaler
 
 
 class HXRULDataset(Dataset):
-    def __init__(self, raw_data_dir: str):
+    def __init__(self, raw_data_dir: str, scaler: DataScaler):
         super().__init__()
         self.annotations = self._load_annotations()
         self.flattened_annotations = self._flatten_annotations()
         self.feature_cols = self._load_feature_params()
         self.raw_data_dir = raw_data_dir
+        self.scaler = scaler
 
     def __len__(self) -> int:
 
@@ -31,8 +32,9 @@ class HXRULDataset(Dataset):
         )
         data = pd.read_csv(file_path, dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str})
         data = self._feature_fn(data, flight["pack"])
+        data = self.scaler.transform(data.values)
 
-        x = torch.tensor(data.values, dtype=torch.float32)
+        x = torch.tensor(data, dtype=torch.float32)
         y = torch.tensor(flight["rul_h"], dtype=torch.float32)
         mask = torch.ones(x.size(0), dtype=torch.float32)
 

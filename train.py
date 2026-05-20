@@ -1,69 +1,66 @@
-# train.py
 import torch
-from torch.utils.data import DataLoader
-from torch.optim import Adam
-from torch.nn import MSELoss
+import yaml
+from torch.utils.data import DataLoader, Subset
+
 from src.data.dataset import HXRULDataset
 from src.data.dataloader import collate_fn
-from src.models.transformer import QARTransformerEncoder
+from src.utils.scaler import DataScaler
+from src.utils.self_supervise_mask_gen import SelfSuperviseMaskGenerator
+from src.models.encoder import Encoder
 
 
-def main():
-    # 1. 初始化数据
-    dataset = HXRULDataset(raw_data_dir="D:/raw_data/")
-    # 动态获取特征维度（取第一个样本的 pack 特征数）
-    sample = dataset[0]
-    input_dim = sample["features"].shape[1]
+def train_encoder():
+    with open("configs/train_config.yaml", "r") as f:
+        train_config = yaml.safe_load(f)
+    CONFIG = train_config["encoder_training_config"]
 
-    dataloader = DataLoader(
-        dataset, batch_size=32, shuffle=True, collate_fn=collate_fn, num_workers=4
+    scaler = DataScaler(
+        raw_data_dir=CONFIG["raw_data_dir"],
+        use_sample=CONFIG["use_sample_for_scaler_fitting"],
     )
 
-    # 2. 初始化模型 & 优化器
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = QARTransformerEncoder(
-        input_dim=input_dim,
-        d_model=64,
-        nhead=4,
-        num_layers=3,
-        dim_feedforward=128,
-        dropout=0.1,
-        output_dim=1,
-    ).to(device)
+    dataset = HXRULDataset(CONFIG["raw_data_dir"], scaler=scaler)
+    n_total = len(dataset)
+    n_val = n_total * CONFIG["val_set_ratio"]
+    train_set_indices = list(range(0, n_total - n_val))
+    val_set_indices = list(range(n_total - n_val, n_total))
+    train_set = Subset(dataset=dataset, indices=train_set_indices)
+    val_set = Subset(dataset=dataset, indices=val_set_indices)
 
-    optimizer = Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    criterion = MSELoss()
+    train_set_loader = DataLoader(
+        dataset=train_set,
+        batch_size=CONFIG["batch_size"],
+        shuffle=True,
+        collate_fn=collate_fn,
+        num_workers=CONFIG["num_workers"],
+        pin_memory=True,
+    )
+    val_set_loader = DataLoader(
+        dataset=val_set,
+        batch_size=CONFIG["batch_size"],
+        shuffle=True,
+        collate_fn=collate_fn,
+        num_workers=CONFIG["num_workers"],
+        pin_memory=True,
+    )
 
-    # 3. 训练循环
-    num_epochs = 50
-    model.train()
-    for epoch in range(num_epochs):
-        epoch_loss = 0.0
-        for batch in dataloader:
-            features = batch["padded_features"].to(device)
-            padding_mask = batch["padding_mask"].to(device)
-            rul = batch["rul"].to(device)
-
-            optimizer.zero_grad()
-
-            # 前向传播
-            encoded_vec = model(features, padding_mask)  # (batch, 32)
-
-            # 📌 此处 encoded_vec 就是你想要的“航段特征向量”
-            # 后续可接 MLP 预测 RUL，或直接与 rul 计算损失
-            pred_rul = encoded_vec.squeeze(-1)  # 假设 output_dim=1 或接一个回归头
-            loss = criterion(pred_rul, rul)
-
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            optimizer.step()
-
-            epoch_loss += loss.item()
-
-        print(
-            f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss / len(dataloader):.4f}"
-        )
-
-
-if __name__ == "__main__":
-    main()
+    model = Encoder(
+        feat_dim=CONFIG["feat_dim"],
+        embed_dim=CONFIG["embed_dim"],
+        n_head=CONFIG["n_head"],
+        n_layers=CONFIG["n_layers"],
+        dropout=CONFIG["dropout"],
+    ).to(device=CONFIG["device"])
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=CONFIG["lr"], weight_decay=CONFIG["weight_decay"]
+    )
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer=optimizer, T_max=CONFIG["epochs"]
+    )
+    criterion = torch.nn.SmoothL1Loss()
+    amp_scaler = torch.amp.GradScaler()
+    mask_generator = SelfSuperviseMaskGenerator(
+        total_mask_ratio=CONFIG["total_mask_ratio"],
+        block_len=CONFIG["block_len"],
+        channel_mask_ratio=CONFIG["channel_mask_ratio"],
+    )
