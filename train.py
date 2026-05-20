@@ -1,5 +1,6 @@
 import torch
 import yaml
+from tqdm import tqdm
 from torch.utils.data import DataLoader, Subset
 
 from src.data.dataset import HXRULDataset
@@ -64,3 +65,7 @@ def train_encoder():
         block_len=CONFIG["block_len"],
         channel_mask_ratio=CONFIG["channel_mask_ratio"],
     )
+    
+    for epoch in range(CONFIG['epochs']):
+        model.train()
+        
