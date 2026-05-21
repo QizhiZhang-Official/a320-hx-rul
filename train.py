@@ -118,7 +118,7 @@ def train_encoder():
 
         avg_train = train_loss / n_batches
         avg_val = val_loss / n_val_batches if n_val_batches > 0 else float("inf")
-        elapsed = time.time() = overall_start
+        elapsed = time.time() - overall_start
         avg_epoch = elapsed / (epoch + 1)
         eta = avg_epoch * (CONFIG['epochs'] - epoch -1)
         print(
