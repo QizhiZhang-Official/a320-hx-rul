@@ -36,7 +36,7 @@ class DataScaler:
     def get_data_for_fit(self) -> np.ndarray:
         data_to_fit_scaler = []
         preprocessor = PreProcessor()
-        annotations = self.load_annotations
+        annotations = self.load_annotations()
         pack_1_parameters, pack_2_parameters = self.load_pack_parameters()
         for i in range(self.use_sample):
             annotation = annotations[i]["annotation"]

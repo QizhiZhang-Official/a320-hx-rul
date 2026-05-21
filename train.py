@@ -12,7 +12,7 @@ from src.models.encoder import Encoder
 
 
 def train_encoder():
-    with open("configs/train_config.yaml", "r") as f:
+    with open("configs/train_config.yaml", "r", encoding="utf-8") as f:
         train_config = yaml.safe_load(f)
     CONFIG = train_config["encoder_training_config"]
 
@@ -73,46 +73,53 @@ def train_encoder():
         n_batches = 0
 
         for batch in train_set_loader:
-            x = batch["padded_features"].to(CONFIG['device'])
-            padding_mask = batch["padding"].to(CONFIG['device'])
+            x = batch["padded_features"].to(CONFIG["device"])
+            padding_mask = batch["padding"].to(CONFIG["device"])
             x_masked, mask_bool = mask_generator.exec(x=x, padding_mask=padding_mask)
-            
+
             optimizer.zero_grad()
             with torch.amp.autocast_mode():
                 recon = model(x_masked, padding_mask)
                 loss = criterion(recon[mask_bool], x[mask_bool])
-            
+
             amp_scaler.scale(loss).backward()
             amp_scaler.unscale_(optimizer=optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             amp_scaler.step(optimizer=optimizer)
             amp_scaler.update()
-            
+
             train_loss += loss.item()
             n_batches += 1
-        
+
         scheduler.step()
-        
+
         model.eval()
         val_loss = 0.0
         n_val_batches = 0
         with torch.no_grad():
             for batch in val_set_loader:
-                x = batch['padded_features'].to(CONFIG['device'])
-                padding_mask = batch['padding_mask'].to(CONFIG['device'])
-                x_masked, mask_bool = mask_generator.exec(x=x, padding_mask=padding_mask)
+                x = batch["padded_features"].to(CONFIG["device"])
+                padding_mask = batch["padding_mask"].to(CONFIG["device"])
+                x_masked, mask_bool = mask_generator.exec(
+                    x=x, padding_mask=padding_mask
+                )
                 with torch.amp.autocast_mode():
                     recon = model(x_masked, padding_mask)
                     val_loss += criterion(recon[mask_bool], x[mask_bool]).item()
                 n_val_batches += 1
-        
+
         avg_train = train_loss / n_batches
-        avg_val = val_loss / n_val_batches if n_val_batches > 0 else float('inf')
-        print(f'Epoch {epoch+1:02d} | Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.2e}')
-        
+        avg_val = val_loss / n_val_batches if n_val_batches > 0 else float("inf")
+        print(
+            f"Epoch {epoch + 1:02d} | Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.2e}"
+        )
+
         if (epoch + 1) % 5 == 0 or epoch == CONFIG["epochs"] - 1:
-            ckpt_path = os.path.join(os.getcwd(), 'checkpoints', f"encoder{epoch+1}.pth")
+            ckpt_path = os.path.join(
+                os.getcwd(), "checkpoints", f"encoder{epoch + 1}.pth"
+            )
             torch.save(model.state_dict(), ckpt_path)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     train_encoder()
