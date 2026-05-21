@@ -43,7 +43,7 @@ class DataScaler:
             for flight in annotation:
                 year = str(flight["lifecycle_start_date"].year)
                 craft_no = flight["craft_no"]
-                file_name = flight["flie_name"]
+                file_name = flight["file_name"]
                 pack = flight["pack"]
                 data = pd.read_csv(
                     os.path.join(self.raw_data_dir, year, craft_no, file_name),
