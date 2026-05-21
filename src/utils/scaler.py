@@ -75,9 +75,9 @@ class DataScaler:
 
     def save(self, name: str) -> None:
         os.makedirs("checkpoints/", exist_ok=True)
-        torch.save(self.scaler, "checkpoints/scaler.pkl")
+        torch.save(self.scaler, f"checkpoints/{name}")
 
     def load(self, name: str) -> None:
-        assert os.path.exists("checkpoints/scaler.pkl"), f"{name} not found."
-        self.scaler = torch.load("checkpoints/scaler.pkl", map_location="cpu")
+        assert os.path.exists(f"checkpoints/{name}"), f"{name} not found."
+        self.scaler = torch.load(f"checkpoints/{name}", map_location="cpu")
         self.is_fitted = True
