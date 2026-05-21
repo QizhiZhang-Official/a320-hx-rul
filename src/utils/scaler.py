@@ -74,12 +74,12 @@ class DataScaler:
         return self.scaler.transform(data)
 
     def save(self, name: str) -> None:
-        save_path = os.path.join("checkpoints", name)
+        save_path = os.path.join(os.getcwd(), "checkpoints", name)
         os.makedirs(save_path, exist_ok=True)
         torch.save(self.scaler, save_path)
 
     def load(self, name: str) -> None:
-        load_path = os.path.join("checkpoints", name)
+        load_path = os.path.join(os.getcwd(), "checkpoints", name)
         assert os.path.exists(load_path), f"{name} not found."
         self.scaler = torch.load(load_path, map_location="cpu")
         self.is_fitted = True

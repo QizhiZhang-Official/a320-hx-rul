@@ -1,6 +1,7 @@
 import torch
 import yaml
 import os
+import time
 from tqdm import tqdm
 from torch.utils.data import DataLoader, Subset
 
@@ -9,6 +10,12 @@ from src.data.dataloader import collate_fn
 from src.utils.scaler import DataScaler
 from src.utils.self_supervise_mask_gen import SelfSuperviseMaskGenerator
 from src.models.encoder import Encoder
+
+
+def format_sec(seconds: float) -> str:
+    h, rem = divmod(int(seconds), 3600)
+    m, s = divmod(rem, 60)
+    return f"{h:02d}h {m:02d}m {s:02d}s"
 
 
 def train_encoder():
@@ -67,6 +74,7 @@ def train_encoder():
         channel_mask_ratio=CONFIG["channel_mask_ratio"],
     )
 
+    overall_start = time.time()
     for epoch in range(CONFIG["epochs"]):
         model.train()
         train_loss = 0.0
@@ -110,8 +118,11 @@ def train_encoder():
 
         avg_train = train_loss / n_batches
         avg_val = val_loss / n_val_batches if n_val_batches > 0 else float("inf")
+        elapsed = time.time() = overall_start
+        avg_epoch = elapsed / (epoch + 1)
+        eta = avg_epoch * (CONFIG['epochs'] - epoch -1)
         print(
-            f"Epoch {epoch + 1:02d} | Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.2e}"
+            f"Epoch {epoch + 1:02d} | Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.2e} | Elapsed: {format_sec(elapsed)} | ETA: {format_sec(eta)}"
         )
 
         if (epoch + 1) % 5 == 0 or epoch == CONFIG["epochs"] - 1:
