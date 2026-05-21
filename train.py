@@ -30,7 +30,7 @@ def train_encoder():
 
     dataset = HXRULDataset(CONFIG["raw_data_dir"], scaler=scaler)
     n_total = len(dataset)
-    n_val = n_total * CONFIG["val_set_ratio"]
+    n_val = int(n_total * CONFIG["val_set_ratio"])
     train_set_indices = list(range(0, n_total - n_val))
     val_set_indices = list(range(n_total - n_val, n_total))
     train_set = Subset(dataset=dataset, indices=train_set_indices)

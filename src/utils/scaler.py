@@ -74,8 +74,9 @@ class DataScaler:
         return self.scaler.transform(data)
 
     def save(self, name: str) -> None:
-        save_path = os.path.join(os.getcwd(), "checkpoints", name)
-        os.makedirs(save_path, exist_ok=True)
+        save_dir = os.path.join(os.getcwd(), "checkpoints")
+        save_path = os.path.join(save_dir, name)
+        os.makedirs(save_dir, exist_ok=True)
         torch.save(self.scaler, save_path)
 
     def load(self, name: str) -> None:
