@@ -49,7 +49,7 @@ class DataScaler:
                     os.path.join(self.raw_data_dir, year, craft_no, file_name),
                     dtype={"CITY_PAIR_FR": str, "CITY_PAIR_TO": str},
                 )
-                _, data = preprocessor.check_phase(data)
+                _, data = preprocessor.check_phase(data, phase=2)
                 data = preprocessor.indexing(data)
                 data = preprocessor.filtering(data)
                 data = preprocessor.standardize(data)
