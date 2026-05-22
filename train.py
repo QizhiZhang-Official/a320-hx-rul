@@ -23,11 +23,13 @@ def train_encoder():
         train_config = yaml.safe_load(f)
     CONFIG = train_config["encoder_training_config"]
 
+    print("\nInitializing Scaler...")
     scaler = DataScaler(
         raw_data_dir=CONFIG["raw_data_dir"],
         use_sample=CONFIG["use_sample_for_scaler_fitting"],
     )
 
+    print("\nInitializing DataLoader...")
     dataset = HXRULDataset(CONFIG["raw_data_dir"], scaler=scaler)
     n_total = len(dataset)
     n_val = int(n_total * CONFIG["val_set_ratio"])
@@ -53,6 +55,7 @@ def train_encoder():
         pin_memory=True,
     )
 
+    print("\nInitializing Model...")
     model = Encoder(
         feat_dim=CONFIG["feat_dim"],
         embed_dim=CONFIG["embed_dim"],
@@ -60,14 +63,19 @@ def train_encoder():
         n_layers=CONFIG["n_layers"],
         dropout=CONFIG["dropout"],
     ).to(device=CONFIG["device"])
+    print("\nInitializing Optimizer...")
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=CONFIG["lr"], weight_decay=CONFIG["weight_decay"]
     )
+    print("\nInitializing Scheduler...")
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer=optimizer, T_max=CONFIG["epochs"]
     )
+    print("\nInitializing Criterion...")
     criterion = torch.nn.SmoothL1Loss()
-    amp_scaler = torch.amp.grad_scaler()
+    print("\nInitializing AmpScaler...")
+    amp_scaler = torch.amp.GradScaler()
+    print("\nInitializing MaskGenerator...")
     mask_generator = SelfSuperviseMaskGenerator(
         total_mask_ratio=CONFIG["total_mask_ratio"],
         block_len=CONFIG["block_len"],
@@ -76,17 +84,19 @@ def train_encoder():
 
     overall_start = time.time()
     for epoch in range(CONFIG["epochs"]):
+        print(f"\nEpoch {epoch + 1}")
+
+        print('Training...')
         model.train()
         train_loss = 0.0
         n_batches = 0
-
-        for batch in train_set_loader:
+        for batch in tqdm(train_set_loader):
             x = batch["padded_features"].to(CONFIG["device"])
-            padding_mask = batch["padding"].to(CONFIG["device"])
+            padding_mask = batch["padding_mask"].to(CONFIG["device"])
             x_masked, mask_bool = mask_generator.exec(x=x, padding_mask=padding_mask)
 
             optimizer.zero_grad()
-            with torch.amp.autocast_mode():
+            with torch.amp.autocast(device_type=CONFIG["device"]):
                 recon = model(x_masked, padding_mask)
                 loss = criterion(recon[mask_bool], x[mask_bool])
 
@@ -101,17 +111,18 @@ def train_encoder():
 
         scheduler.step()
 
+        print('Evaluating...')
         model.eval()
         val_loss = 0.0
         n_val_batches = 0
         with torch.no_grad():
-            for batch in val_set_loader:
+            for batch in tqdm(val_set_loader):
                 x = batch["padded_features"].to(CONFIG["device"])
                 padding_mask = batch["padding_mask"].to(CONFIG["device"])
                 x_masked, mask_bool = mask_generator.exec(
                     x=x, padding_mask=padding_mask
                 )
-                with torch.amp.autocast_mode():
+                with torch.amp.autocast(device_type=CONFIG["device"]):
                     recon = model(x_masked, padding_mask)
                     val_loss += criterion(recon[mask_bool], x[mask_bool]).item()
                 n_val_batches += 1
@@ -120,9 +131,9 @@ def train_encoder():
         avg_val = val_loss / n_val_batches if n_val_batches > 0 else float("inf")
         elapsed = time.time() - overall_start
         avg_epoch = elapsed / (epoch + 1)
-        eta = avg_epoch * (CONFIG['epochs'] - epoch -1)
+        eta = avg_epoch * (CONFIG["epochs"] - epoch - 1)
         print(
-            f"Epoch {epoch + 1:02d} | Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.2e} | Elapsed: {format_sec(elapsed)} | ETA: {format_sec(eta)}"
+            f"Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.4f} | Elapsed: {format_sec(elapsed)} | ETA: {format_sec(eta)}"
         )
 
         if (epoch + 1) % 5 == 0 or epoch == CONFIG["epochs"] - 1:

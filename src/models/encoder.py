@@ -37,7 +37,7 @@ class Encoder(nn.Module):
         self.recon_head = nn.Sequential(
             nn.Linear(embed_dim, embed_dim // 2),
             nn.GELU(),
-            nn.Linear(embed_dim, feat_dim),
+            nn.Linear(embed_dim // 2, feat_dim),
         )
     
     def forward(self, x, padding_mask):

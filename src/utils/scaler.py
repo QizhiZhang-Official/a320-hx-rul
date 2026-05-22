@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import yaml
 import pandas as pd
+from tqdm import tqdm
 from sklearn.preprocessing import RobustScaler
 from src.data.preprocess import PreProcessor
 
@@ -38,7 +39,7 @@ class DataScaler:
         preprocessor = PreProcessor()
         annotations = self.load_annotations()
         pack_1_parameters, pack_2_parameters = self.load_pack_parameters()
-        for i in range(self.use_sample):
+        for i in tqdm(range(self.use_sample)):
             annotation = annotations[i]["annotation"]
             for flight in annotation:
                 year = str(flight["lifecycle_start_date"].year)
