@@ -2,7 +2,9 @@ import torch
 import yaml
 import os
 import time
+import csv
 from tqdm import tqdm
+from datetime import datetime
 from torch.utils.data import DataLoader, Subset
 
 from src.data.dataset import HXRULDataset
@@ -82,11 +84,20 @@ def train_encoder():
         channel_mask_ratio=CONFIG["channel_mask_ratio"],
     )
 
+    log_file_name = datetime.now().strftime("%Y%m%d_%H%M%S") + ".csv"
+    os.makedirs("log/", exist_ok=True)
+    with open(
+        os.path.join("log", log_file_name), "w", newline="", encoding="utf-8"
+    ) as f:
+        csv.writer(f).writerow(
+            ["Record_time", "Epoch", "Train_Loss", "Val_Loss", "LR", "Elapsed", "ETA"]
+        )
+
     overall_start = time.time()
     for epoch in range(CONFIG["epochs"]):
         print(f"\nEpoch {epoch + 1}")
 
-        print('Training...')
+        print("Training...")
         model.train()
         train_loss = 0.0
         n_batches = 0
@@ -111,7 +122,7 @@ def train_encoder():
 
         scheduler.step()
 
-        print('Evaluating...')
+        print("Evaluating...")
         model.eval()
         val_loss = 0.0
         n_val_batches = 0
@@ -136,11 +147,26 @@ def train_encoder():
             f"Train Loss: {avg_train:.4f} | Val Loss: {avg_val:.4f} | LR: {scheduler.get_last_lr()[0]:.4f} | Elapsed: {format_sec(elapsed)} | ETA: {format_sec(eta)}"
         )
 
-        if (epoch + 1) % 5 == 0 or epoch == CONFIG["epochs"] - 1:
-            ckpt_path = os.path.join(
-                os.getcwd(), "checkpoints", f"encoder{epoch + 1}.pth"
+        with open(
+            os.path.join("log", log_file_name),
+            "a",
+            newline="",
+            encoding="utf-8",
+        ) as f:
+            csv.writer(f).writerow(
+                [
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    epoch + 1,
+                    f"{avg_train:.4f}",
+                    f"{avg_val:.4f}",
+                    f"{scheduler.get_last_lr()[0]:.4f}",
+                    f"{format_sec(elapsed)}",
+                    f"{format_sec(eta)}",
+                ]
             )
-            torch.save(model.state_dict(), ckpt_path)
+
+        ckpt_path = os.path.join(os.getcwd(), "checkpoints", f"encoder{epoch + 1}.pth")
+        torch.save(model.state_dict(), ckpt_path)
 
 
 if __name__ == "__main__":
