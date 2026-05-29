@@ -165,8 +165,17 @@ def train_encoder():
                 ]
             )
 
-        ckpt_path = os.path.join(os.getcwd(), "checkpoints", f"encoder{epoch + 1}.pth")
-        torch.save(model.state_dict(), ckpt_path)
+        save_path = os.path.join(os.getcwd(), "checkpoints", f"encoder{epoch + 1}.pth")
+        torch.save(
+            {
+                "feat_dim": CONFIG["feat_dim"],
+                "embed_dim": CONFIG["embed_dim"],
+                "n_head": CONFIG["n_head"],
+                "n_layers": CONFIG["n_layers"],
+                "dropout": CONFIG["dropout"],
+                "model_state_dict": model.state_dict(),
+            }
+        )
 
 
 if __name__ == "__main__":
