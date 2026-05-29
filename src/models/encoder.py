@@ -39,13 +39,31 @@ class Encoder(nn.Module):
             nn.GELU(),
             nn.Linear(embed_dim // 2, feat_dim),
         )
-    
+
     def forward(self, x, padding_mask):
         h = self.input_proj(x)
         h = self.pos_encoder(h)
         h = self.encoder(h, src_key_padding_mask=padding_mask)
-        
+
         return self.recon_head(h)
 
 
-# class QAREncoder
+class QAREncoder:
+    def __init__(self, checkpoint_path, device):
+        self.device = device
+        self.checkpoint = torch.load(f=checkpoint_path, map_location=self.device)
+        self.encoder = self._load_encoder()
+    
+    def _load_encoder(self):
+        encoder = Encoder(
+            feat_dim=self.checkpoint["feat_dim"],
+            embed_dim=self.checkpoint["embed_dim"],
+            n_head=self.checkpoint["n_head"],
+            n_layers=self.checkpoint["n_layers"],
+            dropout=self.checkpoint["dropout"],
+        )
+        encoder.load_state_dict(self.checkpoint['model_state_dict'])
+        encoder.to(self.device)
+        encoder.eval()
+        
+        return encoder
