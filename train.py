@@ -174,7 +174,8 @@ def train_encoder():
                 "n_layers": CONFIG["n_layers"],
                 "dropout": CONFIG["dropout"],
                 "model_state_dict": model.state_dict(),
-            }
+            },
+            save_path,
         )
 
 
