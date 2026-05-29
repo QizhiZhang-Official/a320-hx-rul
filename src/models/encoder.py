@@ -46,6 +46,3 @@ class Encoder(nn.Module):
         h = self.encoder(h, src_key_padding_mask=padding_mask)
         
         return self.recon_head(h)
-
-
-class QAREncoder(nn)
