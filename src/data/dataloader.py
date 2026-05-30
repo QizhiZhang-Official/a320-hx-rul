@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 
 
-def collate_fn(batch) -> dict:
+def collate_fn(batch: list) -> dict:
     features = [item["features"] for item in batch]
     rul = [item["rul"] for item in batch]
     meta = [item["meta"] for item in batch]

@@ -24,15 +24,21 @@ def train_encoder():
     with open("configs/train_config.yaml", "r", encoding="utf-8") as f:
         train_config = yaml.safe_load(f)
     CONFIG = train_config["encoder_training_config"]
+    RAW_DATA_DIR = ''
+    for dir in CONFIG["raw_data_dir"]:
+        if dir.exist():
+            RAW_DATA_DIR = dir
+            break
 
     print("\nInitializing Scaler...")
     scaler = DataScaler(
-        raw_data_dir=CONFIG["raw_data_dir"],
+        raw_data_dir=RAW_DATA_DIR,
         use_sample=CONFIG["use_sample_for_scaler_fitting"],
     )
 
     print("\nInitializing DataLoader...")
-    dataset = HXRULDataset(CONFIG["raw_data_dir"], scaler=scaler)
+    
+    dataset = HXRULDataset(raw_data_dir=RAW_DATA_DIR, scaler=scaler)
     n_total = len(dataset)
     n_val = int(n_total * CONFIG["val_set_ratio"])
     train_set_indices = list(range(0, n_total - n_val))

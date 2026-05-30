@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 class PositionalEmbedder(nn.Module):
-    def __init__(self, d_model, max_len=7000):
+    def __init__(self, d_model: int, max_len: int = 7000):
         super().__init__()
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
@@ -21,14 +21,16 @@ class PositionalEmbedder(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, feat_dim, embed_dim, n_head, n_layers, dropout):
+    def __init__(
+        self, feat_dim: int, embed_dim: int, n_head: int, n_layers: int, dropout: float
+    ):
         super().__init__()
         self.input_proj = nn.Linear(feat_dim, embed_dim)
         self.pos_encoder = PositionalEmbedder(d_model=embed_dim)
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim,
             nhead=n_head,
-            dim_feedforward=embed_dim,
+            dim_feedforward=embed_dim * 4,
             dropout=dropout,
             batch_first=True,
             activation="gelu",
@@ -39,31 +41,40 @@ class Encoder(nn.Module):
             nn.GELU(),
             nn.Linear(embed_dim // 2, feat_dim),
         )
+        self.mode = 'training'
 
-    def forward(self, x, padding_mask):
+    @classmethod
+    def load_checkpoint(cls, checkpoint_path: str, device: str):
+        checkpoint = torch.load(f=checkpoint_path, map_location=device)
+        encoder = cls(
+            feat_dim=checkpoint["feat_dim"],
+            embed_dim=checkpoint["embed_dim"],
+            n_head=checkpoint["n_head"],
+            n_layers=checkpoint["n_layers"],
+            dropout=checkpoint["dropout"],
+        )
+        encoder.load_state_dict(state_dict=checkpoint["model_state_dict"])
+
+        encoder.to(device=device)
+        encoder.eval()
+        for parameter in encoder.parameters():
+            parameter.requires_grad = False
+        encoder.mode = 'inference'
+
+        return encoder
+
+    def forward(self, x: torch.Tensor, padding_mask: torch.Tensor) -> torch.Tensor:
         h = self.input_proj(x)
         h = self.pos_encoder(h)
         h = self.encoder(h, src_key_padding_mask=padding_mask)
 
-        return self.recon_head(h)
+        if self.mode == 'training':
+            y = self.recon_head(h)
+        if self.mode == 'inference':
+            valid_mask = ~padding_mask
+            full2d_mask = valid_mask.unsqueeze(-1).float()
+            full3d_mask = full2d_mask.repeat(1, 1, h.shape[-1])
+            valid_h = h * full3d_mask
+            y = valid_h.sum(dim=1) / full3d_mask.sum(dim=1)
 
-
-class QAREncoder:
-    def __init__(self, checkpoint_path, device):
-        self.device = device
-        self.checkpoint = torch.load(f=checkpoint_path, map_location=self.device)
-        self.encoder = self._load_encoder()
-    
-    def _load_encoder(self):
-        encoder = Encoder(
-            feat_dim=self.checkpoint["feat_dim"],
-            embed_dim=self.checkpoint["embed_dim"],
-            n_head=self.checkpoint["n_head"],
-            n_layers=self.checkpoint["n_layers"],
-            dropout=self.checkpoint["dropout"],
-        )
-        encoder.load_state_dict(self.checkpoint['model_state_dict'])
-        encoder.to(self.device)
-        encoder.eval()
-        
-        return encoder
+        return y
