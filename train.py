@@ -26,7 +26,7 @@ def train_encoder():
     CONFIG = train_config["encoder_training_config"]
     RAW_DATA_DIR = ''
     for dir in CONFIG["raw_data_dir"]:
-        if dir.exist():
+        if os.path.exists(dir):
             RAW_DATA_DIR = dir
             break
 
