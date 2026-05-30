@@ -19,10 +19,10 @@ dependencies = [
 torch = [
     {
         path = "wheels/torch-2.11.0+cu130-cp314-cp314-win_amd64.whl",
-        marker = "sys_platform == 'win32'"
-    }
+        marker = "sys_platform == 'win32'",
+    },
     {
         path = "wheels/torch-2.11.0+cu130-cp314-cp314-manylinux_2_28_x86_64.whl",
-        marker = "sys_platform == 'linux'"
-    }
+        marker = "sys_platform == 'linux'",
+    },
 ]
