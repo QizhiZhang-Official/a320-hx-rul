@@ -5,7 +5,7 @@ encoder_training_config:
   raw_data_dir: 
     - D:/raw_data/
     - /root/autodl-tmp/
-  use_sample_for_scaler_fitting: 50
+  use_sample_for_scaler_fitting: 47 # max=47
   val_set_ratio: 0.2
   
   # 自训练掩码

@@ -17,8 +17,8 @@ def main():
         sys.exit(1)
 
     # 列宽已为 MEM 的 X.X/X.XGB 格式重新对齐
-    fmt = "{:<8} {:<30} {:>5} {:>13} {:>5} {:>6} {:>4} {:>8} {:>9}"
-    header = fmt.format("TIME", "GPU_NAME", "GPU%", "MEM", "TEMP", "POWER", "FAN", "CLK_GR", "CLK_MEM")
+    fmt = "{:<8} {:<30} {:>5} {:>13} {:>5} {:>6} {:>4}"
+    header = fmt.format("TIME", "GPU_NAME", "GPU%", "MEM", "TEMP", "POWER", "FAN")
     print(header)
     print("-" * len(header))
 
@@ -52,13 +52,7 @@ def main():
                 fan = safe(pynvml.nvmlDeviceGetFanSpeed, h)
                 fan_str = f"{fan}%" if fan is not None else "-"
 
-                clk_gr = safe(pynvml.nvmlDeviceGetClockInfo, h, pynvml.NVML_CLOCK_GRAPHICS)
-                clk_gr_str = f"{clk_gr}MHz" if clk_gr is not None else "-"
-
-                clk_mem = safe(pynvml.nvmlDeviceGetClockInfo, h, pynvml.NVML_CLOCK_MEM)
-                clk_mem_str = f"{clk_mem}MHz" if clk_mem is not None else "-"
-
-                print(fmt.format(ts, name, gpu_pct, mem_str, temp_str, power_w, fan_str, clk_gr_str, clk_mem_str))
+                print(fmt.format(ts, name, gpu_pct, mem_str, temp_str, power_w, fan_str))
             print("-" * len(header))
             time.sleep(1)
     except KeyboardInterrupt:
