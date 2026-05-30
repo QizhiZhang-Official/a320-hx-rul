@@ -14,7 +14,7 @@ encoder_training_config:
   channel_mask_ratio: 0.2
 
   # Encoder 参数
-  batch_size: 128
+  batch_size: 64
   num_workers: 8
   feat_dim: 15
   embed_dim: 256
