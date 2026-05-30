@@ -11,9 +11,16 @@ dependencies = [
     "pandas>=3.0.2",
     "pyyaml>=6.0.3",
     "scikit-learn>=1.8.0",
-    "torch",
+    "torch>=2.11.0",
     "tqdm>=4.67.3",
 ]
 
 [tool.uv.sources]
-torch = [ path = "wheels/torch-2.11.0+cu130-cp314-cp314.whl" ]
+torch = [
+    { index = "pytorch-cu130" }
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
