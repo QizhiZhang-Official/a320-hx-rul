@@ -2,6 +2,8 @@
 import torch
 import torch.nn as nn
 
+from tqdm import tqdm
+
 
 class PositionalEmbedder(nn.Module):
     def __init__(self, d_model: int, max_len: int = 7000):
@@ -78,3 +80,13 @@ class Encoder(nn.Module):
             y = valid_h.sum(dim=1) / full3d_mask.sum(dim=1)
 
         return y
+    
+    def encode_one_lifecycle(self, lifecycle_data: list[dict], verbose: bool) -> list[dict]:
+        for i in tqdm(range(len(lifecycle_data)), disable=not verbose):
+            x = lifecycle_data[i]['x']
+            padding_mask = lifecycle_data[i]['padding_mask']
+            y = self.forward(x=x, padding_mask=padding_mask)
+            lifecycle_data[i]['y'] = y
+            lifecycle_data[i].pop('x')
+        
+        return lifecycle_data

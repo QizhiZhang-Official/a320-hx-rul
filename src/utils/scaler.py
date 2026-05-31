@@ -4,6 +4,8 @@ import torch
 import numpy as np
 import yaml
 import pandas as pd
+import joblib
+
 from tqdm import tqdm
 from sklearn.preprocessing import RobustScaler
 from src.data.preprocess import PreProcessor
@@ -16,17 +18,13 @@ class DataScaler:
         self.scaler = None
         self.is_fitted = False
 
-        all_data_np = self.get_data_for_fit()
-        self.fit(all_data_np)
-        self.save("scaler.pkl")
-
-    def load_annotations(self) -> list:
+    def _load_annotations(self) -> list:
         with open("configs/annotations.yaml", "r") as f:
             annotations = yaml.safe_load(f)
 
         return annotations
 
-    def load_pack_parameters(self) -> list | list:
+    def _load_pack_parameters(self) -> list | list:
         with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
             qar_params = yaml.safe_load(f)
             pack_1_parameters = qar_params["pack_1_parameters"]
@@ -34,11 +32,11 @@ class DataScaler:
 
         return pack_1_parameters, pack_2_parameters
 
-    def get_data_for_fit(self) -> np.ndarray:
+    def _get_data_for_fit(self) -> np.ndarray:
         data_to_fit_scaler = []
         preprocessor = PreProcessor()
-        annotations = self.load_annotations()
-        pack_1_parameters, pack_2_parameters = self.load_pack_parameters()
+        annotations = self._load_annotations()
+        pack_1_parameters, pack_2_parameters = self._load_pack_parameters()
         for i in tqdm(range(self.use_sample)):
             annotation = annotations[i]["annotation"]
             for flight in annotation:
@@ -65,7 +63,8 @@ class DataScaler:
 
         return all_data_np
 
-    def fit(self, all_data: np.ndarray) -> None:
+    def fit(self) -> None:
+        all_data = self._get_data_for_fit()
         self.scaler = RobustScaler()
         self.scaler.fit(all_data)
         self.is_fitted = True
@@ -76,9 +75,13 @@ class DataScaler:
 
     def save(self, name: str) -> None:
         os.makedirs("checkpoints/", exist_ok=True)
-        torch.save(self.scaler, f"checkpoints/{name}")
+        joblib.dump(self.scaler, f"checkpoints/{name}")
 
-    def load(self, name: str) -> None:
+    @classmethod
+    def load(cls, name: str) -> None:
         assert os.path.exists(f"checkpoints/{name}"), f"{name} not found."
-        self.scaler = torch.load(f"checkpoints/{name}", map_location="cpu")
-        self.is_fitted = True
+        scaler = cls(raw_data_dir=None, use_sample=None)
+        scaler.scaler = joblib.load(f"checkpoints/{name}")
+        scaler.is_fitted = True
+        
+        return scaler

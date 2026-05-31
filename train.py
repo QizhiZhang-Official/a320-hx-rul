@@ -24,7 +24,7 @@ def train_encoder():
     with open("configs/train_config.yaml", "r", encoding="utf-8") as f:
         train_config = yaml.safe_load(f)
     CONFIG = train_config["encoder_training_config"]
-    RAW_DATA_DIR = ''
+    RAW_DATA_DIR = ""
     for dir in CONFIG["raw_data_dir"]:
         if os.path.exists(dir):
             RAW_DATA_DIR = dir
@@ -35,9 +35,11 @@ def train_encoder():
         raw_data_dir=RAW_DATA_DIR,
         use_sample=CONFIG["use_sample_for_scaler_fitting"],
     )
+    scaler.fit()
+    scaler.save(name="scaler.pkl")
 
     print("\nInitializing DataLoader...")
-    
+
     dataset = HXRULDataset(raw_data_dir=RAW_DATA_DIR, scaler=scaler)
     n_total = len(dataset)
     n_val = int(n_total * CONFIG["val_set_ratio"])

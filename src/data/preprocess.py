@@ -1,21 +1,32 @@
 import pandas as pd
 import yaml
 import numpy as np
+import torch
+
 from tqdm import tqdm
 
 
 class PreProcessor:
     def __init__(self):
         self.selected_qar = self._get_selected_qar()
+        self.pack_1_parameters, self.pack_2_parameters = self._get_pack_parameters()
 
     def _get_selected_qar(self) -> list:
         with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f)
-        selected_qar = [item["name"] for item in config["selected_parameters"]]
+            qar_params = yaml.safe_load(f)
+        selected_qar = [item["name"] for item in qar_params["selected_parameters"]]
 
         return selected_qar
 
-    def check_phase(self, data: pd.DataFrame, phase: int):
+    def _get_pack_parameters(self) -> list | list:
+        with open("configs/qar_params.yaml", "r", encoding="utf-8") as f:
+            qar_params = yaml.safe_load(f)
+        pack_1_parameters = qar_params["pack_1_parameters"]
+        pack_2_parameters = qar_params["pack_2_parameters"]
+
+        return pack_1_parameters, pack_2_parameters
+
+    def check_phase(self, data: pd.DataFrame, phase: int) -> bool | pd.DataFrame:
         existing_phases = set(data["Flight Phase from DMU"].dropna().unique())
         required_phases = set(range(2, 10))
 
@@ -62,6 +73,32 @@ class PreProcessor:
 
         return data
 
+    def process_one_lifecycle_data(
+        self, lifecycle_data: list[dict], scaler, device: str, verbose: bool
+    ) -> list[dict]:
+        for i in tqdm(range(len(lifecycle_data)), disable=not verbose):
+            data = lifecycle_data[i]["data"]
+            pack = lifecycle_data[i]["pack"]
+            _, data = self.check_phase(data=data, phase=2)
+            data = self.indexing(data=data)
+            data = self.filtering(data=data)
+            data = self.standardize(data=data)
+            data = self.sync_sample_rate(data=data)
+            if pack == 1:
+                data = data[self.pack_1_parameters].copy()
+            if pack == 2:
+                data = data[self.pack_2_parameters].copy()
+            seq_len = len(data)
+            data = scaler.transform(data=data.values)
+            x = torch.tensor(data, dtype=torch.float32, device=device)
+            x.unsqueeze(0)
+            padding_mask = torch.zeros((1, seq_len), dtype=torch.bool, device=device)
+            lifecycle_data[i]["x"] = x
+            lifecycle_data[i]["padding_mask"] = padding_mask
+            lifecycle_data[i].pop("data")
+
+        return lifecycle_data
+
     def exec(
         self, craft_data: list[dict[str, str | pd.DataFrame]], phase: int
     ) -> list[dict[str, str | pd.DataFrame]]:
@@ -76,13 +113,13 @@ class PreProcessor:
                 # print(f"{file_name} 8个阶段不完整")
                 continue
 
-            data = self.indexing(data)
+            data = self.indexing(data=data)
 
-            data = self.filtering(data)
+            data = self.filtering(data=data)
 
-            data = self.standardize(data)
+            data = self.standardize(data=data)
 
-            data = self.sync_sample_rate(data)
+            data = self.sync_sample_rate(data=data)
 
             processed_craft_data.append({"file_name": file_name, "data": data})
 
